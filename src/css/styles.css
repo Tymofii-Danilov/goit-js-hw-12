@@ -21,7 +21,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
-  margin: 0 auto;
+  margin: 0 auto 24px;
 }
 
 .gallery-stats {
@@ -59,7 +59,7 @@
 
 .gallery-item:hover,
 .gallery-item:focus {
-  /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   transform: scale(1.003, 1.003);
 }
 
@@ -100,11 +100,9 @@
   outline: none;
 }
 
-.form button {
+button {
   border-radius: 8px;
   padding: 8px 16px;
-  width: 91px;
-  height: 40px;
   background: #4e75ff;
   font-weight: 500;
   font-size: 16px;
@@ -113,6 +111,11 @@
   color: #fff;
   border: none;
   outline: none;
+}
+
+button:hover {
+  transform: scale(1.03);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 .loader {

@@ -4,6 +4,7 @@ import "simplelightbox/dist/simple-lightbox.min.css";
 export let bigImg = new SimpleLightbox(".gallery a", { captionsData: "alt", captionDelay: 250, captionPosition: 'outside' });
 const gallery = document.querySelector(".gallery");
 const loader = document.querySelector(".loader");
+const more = document.querySelector(".loadmore")
 
 export function createGallery(images) {
     const markUp = images.map((pic) => {
@@ -23,7 +24,7 @@ export function createGallery(images) {
         </div>
         </li>`;
     }).join('');
-    gallery.innerHTML = markUp;
+    gallery.insertAdjacentHTML("beforeend", markUp);
     bigImg.refresh();
 };
 
@@ -37,4 +38,12 @@ export function showLoader() {
 
 export function hideLoader() {
     loader.classList.add("hidden");
+}
+
+export function showLoadMoreButton() {
+    more.classList.remove("hidden")
+}
+
+export function hideLoadMoreButton() {
+    more.classList.add("hidden");
 }

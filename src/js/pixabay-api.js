@@ -1,23 +1,24 @@
 import axios from 'axios';
 import "izitoast/dist/css/iziToast.min.css";
 
-export function getImagesByQuery(query) {
+export async function getImagesByQuery(query, page = 1) {
     if (!query) {
         return;
     }
-    return axios.get("https://pixabay.com/api/", {
+    try {
+        const response = await axios.get("https://pixabay.com/api/", {
         params: {
             key: "14797936-c0ac273b2bc1360021fe4ee91",
             q: query,
             image_type: "photo",
             orientation: "horizontal",
-            safesearch: false
-        }
-    })
-        .then(response => {
-            return response.data.hits;
+            safesearch: false,
+            page: page,
+            per_page: 15
+            }
         })
-        .catch(response => {
-            console.log(response);
-        })
+        return response.data;
+    } catch (error) {
+        iziToast.show({ color: "red", position: "topRight", message: error.message });
+    }
 }
