@@ -3,35 +3,40 @@ import { clearGallery, createGallery, hideLoader, hideLoadMoreButton, showLoader
 import iziToast from "izitoast";
 
 const form = document.querySelector(".form");
-let page = 1;
 const more = document.querySelector(".loadmore");
-let input;
-let totalImages;
-let cardHeight;
+let page = 1;
+let currentQuery = "";
+let totalImages = 0;
+let cardHeight = 0;
 
 
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    input = event.target.elements['search-text'];
+    const input = event.target.elements['search-text'];
     if (input.value === "") {
         iziToast.show({ color: "red", position: "topRight", message: "Please type in something" });
         return;
     };
+
     page = 1;
+    totalImages = 0;
+    currentQuery = input;
     clearGallery();
     showLoader();
     hideLoadMoreButton();
-    totalImages = 0;
 
     try {
-        const result = await getImagesByQuery(input.value, page);
+        const result = await getImagesByQuery(currentQuery, page);
         if (result.hits.length === 0) {
             iziToast.show({ color: "red", position: "topRight", message: "Sorry, there are no images matching your search query. Please try again!" });
-        } else {
-            totalImages = result.totalHits;
-            createGallery(result.hits);
-            cardHeight = document.querySelector(".gallery-item").getBoundingClientRect().height;
+            return;
         }
+
+        totalImages = result.totalHits;
+        createGallery(result.hits);
+        const firstCard = document.querySelector(".gallery-item");
+        cardHeight = firstCard ? firstCard.getBoundingClientRect().height : 0;
+
         if (totalImages > 15) {
             showLoadMoreButton();
         } else {
@@ -45,6 +50,8 @@ form.addEventListener("submit", async (event) => {
 });
 
 more.addEventListener("click", async (event) => {
+    if (!currentQuery) return;
+    
     page++;
     showLoader();
     hideLoadMoreButton();
@@ -54,7 +61,6 @@ more.addEventListener("click", async (event) => {
         createGallery(result.hits);
         window.scrollBy({
             top: cardHeight*2,
-            left: 0,
             behavior: "smooth",
         });
         
