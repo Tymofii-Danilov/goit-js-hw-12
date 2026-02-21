@@ -10,7 +10,7 @@ let totalImages;
 let cardHeight;
 
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
     event.preventDefault();
     input = event.target.elements['search-text'];
     if (input.value === "") {
@@ -22,39 +22,45 @@ form.addEventListener("submit", (event) => {
     showLoader();
     hideLoadMoreButton();
 
-    getImagesByQuery(input.value, page)
-        .then(data => {
-            if (data.length === 0) {
-                iziToast.show({ color: "red", position: "topRight", message: "Sorry, there are no images matching your search query. Please try again!" });
-            } else {
-                totalImages = data.totalHits;
-                createGallery(data.hits);
-                cardHeight = document.querySelector(".gallery-item").getBoundingClientRect().height;
-            }
-        }).finally((data) => {
-            hideLoader();
-            if (!(page > totalImages / 15)) {
-                showLoadMoreButton();
-            }
-        });
+    try {
+        const result = await getImagesByQuery(input.value, page);
+        if (result.hits.length === 0) {
+            iziToast.show({ color: "red", position: "topRight", message: "Sorry, there are no images matching your search query. Please try again!" });
+        } else {
+            totalImages = result.totalHits;
+            createGallery(result.hits);
+            cardHeight = document.querySelector(".gallery-item").getBoundingClientRect().height;
+        }
+        hideLoader();
+        if (result.totalHits) {
+            showLoadMoreButton();
+        }
+    } catch (error) {
+        iziToast.show({ color: "red", position: "topRight", message: error.message });
+    }
 });
 
-more.addEventListener("click", (event) => {
+more.addEventListener("click", async (event) => {
     page++;
     showLoader();
-    getImagesByQuery(input.value, page)
-        .then(data => {
-            if (page > data.totalHits / 15) {
-                hideLoadMoreButton();
-                iziToast.show({ color: "red", position: "topRight", message: "We're sorry, but you've reached the end of search results." });
-            }
-            createGallery(data.hits);
-            window.scrollBy({
-                top: cardHeight*2,
-                left: 0,
-                behavior: "smooth",
-            });
-        }).finally(() => {
+    hideLoadMoreButton();
+    try {
+        const result = await getImagesByQuery(input.value, page);
+        if (page > totalImages / 15) {
+            hideLoadMoreButton();
+            iziToast.show({ color: "red", position: "topRight", message: "We're sorry, but you've reached the end of search results." });
             hideLoader();
+            return;
+        }
+        createGallery(result.hits);
+        window.scrollBy({
+            top: cardHeight*2,
+            left: 0,
+            behavior: "smooth",
         });
+        hideLoader();
+        showLoadMoreButton();
+    } catch (error) {
+        iziToast.show({ color: "red", position: "topRight", message: error.message });
+    }
 });

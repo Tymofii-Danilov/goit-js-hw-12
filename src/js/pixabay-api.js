@@ -1,4 +1,5 @@
 import axios from 'axios';
+import iziToast from 'izitoast';
 import "izitoast/dist/css/iziToast.min.css";
 
 export async function getImagesByQuery(query, page = 1) {
@@ -12,7 +13,7 @@ export async function getImagesByQuery(query, page = 1) {
             q: query,
             image_type: "photo",
             orientation: "horizontal",
-            safesearch: false,
+            safesearch: true,
             page: page,
             per_page: 15
             }
