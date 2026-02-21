@@ -32,11 +32,15 @@ form.addEventListener("submit", async (event) => {
             cardHeight = document.querySelector(".gallery-item").getBoundingClientRect().height;
         }
         hideLoader();
-        if (result.totalHits) {
+        if (totalImages > 15) {
+            console.log(totalImages);
+            
             showLoadMoreButton();
         }
     } catch (error) {
         iziToast.show({ color: "red", position: "topRight", message: error.message });
+    } finally {
+        hideLoader();
     }
 });
 
@@ -44,23 +48,25 @@ more.addEventListener("click", async (event) => {
     page++;
     showLoader();
     hideLoadMoreButton();
+    
     try {
         const result = await getImagesByQuery(input.value, page);
-        if (page > totalImages / 15) {
-            hideLoadMoreButton();
-            iziToast.show({ color: "red", position: "topRight", message: "We're sorry, but you've reached the end of search results." });
-            hideLoader();
-            return;
-        }
         createGallery(result.hits);
         window.scrollBy({
             top: cardHeight*2,
             left: 0,
             behavior: "smooth",
         });
-        hideLoader();
-        showLoadMoreButton();
+        
+        if (page >= Math.ceil(totalImages / 15)) {
+            hideLoadMoreButton();
+            iziToast.show({ color: "red", position: "topRight", message: "We're sorry, but you've reached the end of search results." });
+        } else {
+            showLoadMoreButton();
+        }
     } catch (error) {
         iziToast.show({ color: "red", position: "topRight", message: error.message });
+    } finally {
+        hideLoader();
     }
 });
