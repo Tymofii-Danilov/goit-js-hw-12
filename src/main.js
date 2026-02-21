@@ -21,6 +21,7 @@ form.addEventListener("submit", async (event) => {
     clearGallery();
     showLoader();
     hideLoadMoreButton();
+    totalImages = 0;
 
     try {
         const result = await getImagesByQuery(input.value, page);
@@ -31,11 +32,10 @@ form.addEventListener("submit", async (event) => {
             createGallery(result.hits);
             cardHeight = document.querySelector(".gallery-item").getBoundingClientRect().height;
         }
-        hideLoader();
         if (totalImages > 15) {
-            console.log(totalImages);
-            
             showLoadMoreButton();
+        } else {
+            iziToast.show({ color: "red", position: "topRight", message: "We're sorry, but you've reached the end of search results." });
         }
     } catch (error) {
         iziToast.show({ color: "red", position: "topRight", message: error.message });
