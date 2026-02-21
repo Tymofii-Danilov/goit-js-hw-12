@@ -12,8 +12,8 @@ let cardHeight = 0;
 
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const input = event.target.elements['search-text'];
-    if (input.value === "") {
+    const input = event.target.elements['search-text'].value.trim();
+    if (!input) {
         iziToast.show({ color: "red", position: "topRight", message: "Please type in something" });
         return;
     };
@@ -34,8 +34,6 @@ form.addEventListener("submit", async (event) => {
 
         totalImages = result.totalHits;
         createGallery(result.hits);
-        const firstCard = document.querySelector(".gallery-item");
-        cardHeight = firstCard ? firstCard.getBoundingClientRect().height : 0;
 
         if (totalImages > 15) {
             showLoadMoreButton();
@@ -57,8 +55,10 @@ more.addEventListener("click", async (event) => {
     hideLoadMoreButton();
     
     try {
-        const result = await getImagesByQuery(input.value, page);
+        const result = await getImagesByQuery(currentQuery, page);
         createGallery(result.hits);
+        const firstCard = document.querySelector(".gallery-item");
+        cardHeight = firstCard ? firstCard.getBoundingClientRect().height : 0;
         window.scrollBy({
             top: cardHeight*2,
             behavior: "smooth",
